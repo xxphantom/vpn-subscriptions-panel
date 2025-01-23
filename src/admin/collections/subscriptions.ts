@@ -32,12 +32,12 @@ export const Subscriptions: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ data }) => {
-            const domain = process.env.SUBSCRIPTIONS_DOMAIN_URL || '';
-            const port = process.env.SUBSCRIPTIONS_DOMAIN_PORT || '';
-            return `https://${domain}${port ? ':' : ''}${port}/subscription/${data.slug}`;
-          }
-        ]
-      }
+            const domain = process.env.SUBSCRIPTIONS_DOMAIN_URL || "localhost";
+            const port = process.env.SUBSCRIPTIONS_DOMAIN_PORT || "3000";
+            return `http${process.env.NODE_ENV === "production" ? "s" : ""}://${domain}${port ? ":" : ""}${port}/subscription/${data.slug}`;
+          },
+        ],
+      },
     },
     {
       name: "expire",

@@ -2,9 +2,11 @@
 import express from "express";
 import payload from "payload";
 import { Request, Response } from "express";
-import https from 'https';
-import fs from 'fs';
-import path from 'path';
+import https from "https";
+import fs from "fs";
+import path from "path";
+
+const DEFAULT_PORT = 3000;
 
 require("dotenv").config();
 
@@ -73,7 +75,7 @@ app.get("/subscription/:slug", async (req: Request, res: Response) => {
 async function start() {
   // Initialize Payload
   await payload.init({
-    secret: process.env.PAYLOAD_SECRET || '',
+    secret: process.env.PAYLOAD_SECRET || "",
     express: app,
     onInit: () => {
       payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`);
@@ -81,23 +83,31 @@ async function start() {
   });
 
   // Определяем режим работы (development/production)
-  const isDev = process.env.NODE_ENV === 'development';
+  const isDev = process.env.NODE_ENV === "development";
 
   if (isDev) {
     // В режиме разработки используем HTTP
     app.listen(3000, () => {
-      console.log('Server running on http://localhost:3000');
+      console.log("Server running on http://localhost:3000");
     });
   } else {
     // В production режиме используем HTTPS
     const sslOptions = {
-      key: fs.readFileSync(path.resolve(process.env.SSL_KEY_PATH || 'ssl/private.key')),
-      cert: fs.readFileSync(path.resolve(process.env.SSL_CERT_PATH || 'ssl/certificate.crt'))
+      key: fs.readFileSync(
+        path.resolve(process.env.SSL_KEY_PATH || "ssl/private.key"),
+      ),
+      cert: fs.readFileSync(
+        path.resolve(process.env.SSL_CERT_PATH || "ssl/certificate.crt"),
+      ),
     };
 
-    https.createServer(sslOptions, app).listen(3000, () => {
-      console.log('Secure server running on https://localhost:3000');
-    });
+    https
+      .createServer(sslOptions, app)
+      .listen(process.env.SUBSCRIPTIONS_DOMAIN_PORT || DEFAULT_PORT, () => {
+        console.log(
+          `Secure server running on https://${process.env.SUBSCRIPTIONS_DOMAIN_URL || "localhost"}:${process.env.SUBSCRIPTIONS_DOMAIN_PORT || DEFAULT_PORT}`,
+        );
+      });
   }
 }
 
