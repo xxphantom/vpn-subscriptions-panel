@@ -1,0 +1,7 @@
+/dist
+/build
+/database
+/media
+node_modules
+.DS_Store
+.env
