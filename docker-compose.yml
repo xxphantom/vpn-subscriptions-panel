@@ -1,13 +1,23 @@
 version: "3"
-
 services:
   admin_db:
     image: postgres
     ports:
-      - 5432:5432
+      - 127.0.0.1:${DB_PORT}:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_INITDB_ARGS="--auth-host=scram-sha-256"
     volumes:
       - ./database:/var/lib/postgresql/data
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+networks:
+  internal_network:
+    driver: bridge

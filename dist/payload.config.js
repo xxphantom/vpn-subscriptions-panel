@@ -29,7 +29,11 @@ exports.default = (0, config_1.buildConfig)({
     plugins: [(0, plugin_cloud_1.payloadCloud)()],
     db: (0, db_postgres_1.postgresAdapter)({
         pool: {
-            connectionString: process.env.DATABASE_URI,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || '5432'),
         },
     }),
 });
