@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Subscriptions = void 0;
+// backend/src/admin/collections/subscriptions.ts
+var sanitize_url_1 = require("../../shared/sanitize-url");
 var uuid_1 = require("uuid");
 exports.Subscriptions = {
     slug: "subscriptions",
@@ -20,7 +22,6 @@ exports.Subscriptions = {
             unique: true,
             required: true,
             defaultValue: function () { return (0, uuid_1.v4)(); },
-            // Можно сгенерировать slug в beforeValidate-хуке, если хотите
         },
         {
             name: "subscriptionUrl",
@@ -35,7 +36,7 @@ exports.Subscriptions = {
                         var data = _a.data;
                         var domain = process.env.SUBSCRIPTIONS_DOMAIN_URL || "localhost";
                         var port = process.env.SUBSCRIPTIONS_DOMAIN_PORT || "3000";
-                        return "http".concat(process.env.NODE_ENV === "production" ? "s" : "", "://").concat(domain).concat(port ? ":" : "").concat(port, "/subscription/").concat(data.slug);
+                        return "http".concat(process.env.NODE_ENV === "production" ? "s" : "", "://").concat(domain).concat(port ? ":" : "").concat(port, "/subscription/").concat((0, sanitize_url_1.sanitizeUrl)(data.name), "/").concat(data.slug);
                     },
                 ],
             },

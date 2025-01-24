@@ -1,4 +1,5 @@
 // backend/src/admin/collections/subscriptions.ts
+import { sanitizeUrl } from "../../shared/sanitize-url";
 import { CollectionConfig } from "payload/types";
 import { v4 as uuidv4 } from "uuid";
 
@@ -20,7 +21,6 @@ export const Subscriptions: CollectionConfig = {
       unique: true,
       required: true,
       defaultValue: () => uuidv4(),
-      // Можно сгенерировать slug в beforeValidate-хуке, если хотите
     },
     {
       name: "subscriptionUrl",
@@ -34,7 +34,7 @@ export const Subscriptions: CollectionConfig = {
           ({ data }) => {
             const domain = process.env.SUBSCRIPTIONS_DOMAIN_URL || "localhost";
             const port = process.env.SUBSCRIPTIONS_DOMAIN_PORT || "3000";
-            return `http${process.env.NODE_ENV === "production" ? "s" : ""}://${domain}${port ? ":" : ""}${port}/subscription/${data.slug}`;
+            return `http${process.env.NODE_ENV === "production" ? "s" : ""}://${domain}${port ? ":" : ""}${port}/subscription/${sanitizeUrl(data.name)}/${data.slug}`;
           },
         ],
       },

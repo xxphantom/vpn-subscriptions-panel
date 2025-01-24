@@ -28,7 +28,7 @@ app.get("/", (_, res) => {
   res.redirect("/admin");
 });
 
-app.get("/subscription/:slug", async (req: Request, res: Response) => {
+app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
   try {
     // 1) Получаем общую конфигурацию
     const globalConfig = await payload.findGlobal({

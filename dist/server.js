@@ -60,7 +60,7 @@ var app = (0, express_1.default)();
 app.get("/", function (_, res) {
     res.redirect("/admin");
 });
-app.get("/subscription/:slug", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var globalConfig, slug, subscription, sub, lines, error_1;
     var _a;
     return __generator(this, function (_b) {
