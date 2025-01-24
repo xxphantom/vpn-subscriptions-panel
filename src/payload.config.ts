@@ -14,10 +14,6 @@ export default buildConfig({
     user: UsersCollection.slug,
     bundler: webpackBundler(),
   },
-  serverURL:
-    process.env.NODE_ENV === "production"
-      ? `https://${process.env.SUBSCRIPTIONS_DOMAIN_URL}:${process.env.SUBSCRIPTIONS_DOMAIN_PORT}`
-      : "http://localhost:3000",
   editor: slateEditor({}),
   collections: [UsersCollection, Subscriptions],
   globals: [SharedConfig],
