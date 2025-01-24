@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import https from "https";
 import fs from "fs";
 import path from "path";
+import { dateToUnixTimestamp } from "./shared/dateUtils";
 
 const DEFAULT_PORT = 3000;
 
@@ -56,7 +57,7 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
     const lines = [
       `#profile-title: ${globalConfig.vpn_name}`,
       `#profile-update-interval: ${globalConfig.config_update_hours}`,
-      `#subscription-userinfo: expire=${sub.expire}`,
+      `#subscription-userinfo: expire=${dateToUnixTimestamp(sub.expire)}`,
       `#support-url: ${globalConfig.support_chat_link}`,
       `#profile-web-page-url: ${globalConfig.site_link}`,
       `#announce: ${globalConfig.announce}`,

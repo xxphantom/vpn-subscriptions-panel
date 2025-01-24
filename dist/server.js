@@ -54,6 +54,7 @@ var payload_1 = __importDefault(require("payload"));
 var https_1 = __importDefault(require("https"));
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
+var dateUtils_1 = require("./shared/dateUtils");
 var DEFAULT_PORT = 3000;
 require("dotenv").config();
 var app = (0, express_1.default)();
@@ -90,7 +91,7 @@ app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void
                 lines = __spreadArray([
                     "#profile-title: ".concat(globalConfig.vpn_name),
                     "#profile-update-interval: ".concat(globalConfig.config_update_hours),
-                    "#subscription-userinfo: expire=".concat(sub.expire),
+                    "#subscription-userinfo: expire=".concat((0, dateUtils_1.dateToUnixTimestamp)(sub.expire)),
                     "#support-url: ".concat(globalConfig.support_chat_link),
                     "#profile-web-page-url: ".concat(globalConfig.site_link),
                     "#announce: ".concat(globalConfig.announce)
