@@ -8,7 +8,7 @@ exports.Subscriptions = {
     slug: "subscriptions",
     admin: {
         useAsTitle: "name",
-        defaultColumns: ["title", "expire"],
+        defaultColumns: ["name", "expire", "subscriptionUrl", "links"],
     },
     fields: [
         {
