@@ -18,6 +18,18 @@
 - Необходимо 2Gb RAM на хосте (так как первый запуск проекта командой `npm run dev` требует много памяти, 1Gb RAM может не хватить)
 - Ограничение по RAM можно обойти, создав базу локально на личном ПК и просто скопировать ее в директорию `database` на сервер
 
+## Пример получения сертификата SSL через ACME.SH для WebNames (c подтверждением по WebHook)
+
+- Для получения сертификата SSL c помощью команд ниже необходимо установить ACME.SH по инструкции Webnames (с вашим API ключом)
+- Инструкция есть в личном кабинете WebNames - заходим в карточку домена, далее "Управление зоной" - Изменить и листаем вниз до "Настройка ACME.SH [Let's Encrypt]"
+
+```bash
+./acme.sh --issue --dns dns_webnames -d example.com
+
+./acme.sh --install-cert -d example.com --cert-file /root/cert/example.com/cert.pem --key-file /root/cert/example.com/key.pem --fullchain-file /root/cert/example.com/fullchain.pem --reloadcmd "pm2 restart vpn-panel"
+```
+
+
 ## О Docker конфигурации
 
 1. `docker-compose.yml` - обеспечивает:
