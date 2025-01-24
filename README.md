@@ -39,7 +39,7 @@
 1. Клонируйте репозиторий:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/xxphantom/vpn-subscriptions-panel.git
 cd vpn-panel
 ```
 
