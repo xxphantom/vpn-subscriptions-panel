@@ -88,8 +88,10 @@ async function start() {
 
   if (isDev) {
     // В режиме разработки используем HTTP
-    app.listen(3000, () => {
-      console.log("Server running on http://localhost:3000");
+    app.listen(process.env.SUBSCRIPTIONS_DOMAIN_PORT || DEFAULT_PORT, () => {
+      console.log(
+        `Server running on http://localhost:${process.env.SUBSCRIPTIONS_DOMAIN_PORT || DEFAULT_PORT}`,
+      );
     });
   } else {
     // В production режиме используем HTTPS
