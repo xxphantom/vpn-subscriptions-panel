@@ -17,6 +17,9 @@ exports.default = (0, config_1.buildConfig)({
         user: users_1.UsersCollection.slug,
         bundler: (0, bundler_webpack_1.webpackBundler)(),
     },
+    serverURL: process.env.NODE_ENV === "production"
+        ? "https://".concat(process.env.SUBSCRIPTIONS_DOMAIN_URL, ":").concat(process.env.SUBSCRIPTIONS_DOMAIN_PORT)
+        : "http://localhost:3000",
     editor: (0, richtext_slate_1.slateEditor)({}),
     collections: [users_1.UsersCollection, subscriptions_1.Subscriptions],
     globals: [sharedConfig_1.SharedConfig],
@@ -32,8 +35,8 @@ exports.default = (0, config_1.buildConfig)({
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
-            host: process.env.DB_HOST || 'localhost',
-            port: parseInt(process.env.DB_PORT || '5432'),
+            host: process.env.DB_HOST || "localhost",
+            port: parseInt(process.env.DB_PORT || "5432"),
         },
     }),
 });
