@@ -3,6 +3,9 @@ import { GlobalConfig } from "payload/types";
 export const SharedConfig: GlobalConfig = {
   slug: "shared-config",
   label: "Общий конфиг VPN",
+  admin: {
+    group: "Настройки",
+  },
   fields: [
     {
       name: "vpn_name",

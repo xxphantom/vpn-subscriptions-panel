@@ -6,6 +6,7 @@ export const SubscriptionGroups: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "description"],
+    group: "VPN",
   },
   labels: {
     singular: "Группа подписок",
@@ -24,6 +25,15 @@ export const SubscriptionGroups: CollectionConfig = {
       type: "textarea",
     },
     {
+      name: "subscriptionCount",
+      label: "Количество подписок",
+      type: "number",
+      defaultValue: 0,
+      admin: {
+        readOnly: true, // Чтобы редактировать только хуками
+      },
+    },
+    {
       name: "slug",
       label: "Идентификатор",
       type: "text",
@@ -31,7 +41,8 @@ export const SubscriptionGroups: CollectionConfig = {
       required: true,
       defaultValue: () => uuidv4(),
       admin: {
-        description: "Уникальный идентификатор группы (генерируется автоматически)",
+        description:
+          "Уникальный идентификатор группы (генерируется автоматически)",
         readOnly: true,
       },
     },

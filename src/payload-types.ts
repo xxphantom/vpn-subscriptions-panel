@@ -10,6 +10,7 @@ export interface Config {
   collections: {
     users: User;
     subscriptions: Subscription;
+    'subscription-groups': SubscriptionGroup;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -41,6 +42,7 @@ export interface User {
 export interface Subscription {
   id: number;
   name: string;
+  group?: (number | null) | SubscriptionGroup;
   slug: string;
   subscriptionUrl?: string | null;
   expire: string;
@@ -50,6 +52,26 @@ export interface Subscription {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscription-groups".
+ */
+export interface SubscriptionGroup {
+  id: number;
+  name: string;
+  description?: string | null;
+  subscriptionCount?: number | null;
+  slug: string;
+  configOverrides?: {
+    vpn_name?: string | null;
+    config_update_hours?: number | null;
+    support_chat_link?: string | null;
+    site_link?: string | null;
+    announce?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
