@@ -4,6 +4,9 @@ exports.SharedConfig = void 0;
 exports.SharedConfig = {
     slug: "shared-config",
     label: "Общий конфиг VPN",
+    admin: {
+        group: "Настройки",
+    },
     fields: [
         {
             name: "vpn_name",

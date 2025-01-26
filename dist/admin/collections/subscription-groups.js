@@ -7,6 +7,7 @@ exports.SubscriptionGroups = {
     admin: {
         useAsTitle: "name",
         defaultColumns: ["name", "description"],
+        group: "VPN",
     },
     labels: {
         singular: "Группа подписок",
@@ -23,6 +24,15 @@ exports.SubscriptionGroups = {
             name: "description",
             label: "Описание",
             type: "textarea",
+        },
+        {
+            name: "subscriptionCount",
+            label: "Количество подписок",
+            type: "number",
+            defaultValue: 0,
+            admin: {
+                readOnly: true, // Чтобы редактировать только хуками
+            },
         },
         {
             name: "slug",

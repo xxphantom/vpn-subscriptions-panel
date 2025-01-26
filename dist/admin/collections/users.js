@@ -10,6 +10,7 @@ exports.UsersCollection = {
     },
     admin: {
         useAsTitle: "email",
+        group: "Настройки",
     },
     fields: [
     // Email added by default
