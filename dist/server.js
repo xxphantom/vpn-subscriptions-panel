@@ -128,8 +128,8 @@ function start() {
                     isDev = process.env.NODE_ENV === "development";
                     if (isDev) {
                         // В режиме разработки используем HTTP
-                        app.listen(3000, function () {
-                            console.log("Server running on http://localhost:3000");
+                        app.listen(process.env.SUBSCRIPTIONS_DOMAIN_PORT || DEFAULT_PORT, function () {
+                            console.log("Server running on http://localhost:".concat(process.env.SUBSCRIPTIONS_DOMAIN_PORT || DEFAULT_PORT));
                         });
                     }
                     else {

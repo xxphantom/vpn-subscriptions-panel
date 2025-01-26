@@ -4,6 +4,10 @@ exports.UsersCollection = void 0;
 exports.UsersCollection = {
     slug: "users",
     auth: true,
+    labels: {
+        singular: "Администратор",
+        plural: "Администраторы",
+    },
     admin: {
         useAsTitle: "email",
     },
