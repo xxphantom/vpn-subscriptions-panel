@@ -62,17 +62,17 @@ app.get("/", function (_, res) {
     res.redirect("/admin");
 });
 app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var globalConfig, slug, subscription, sub, lines, error_1;
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var globalConfig, slug, subscription, sub, config, lines, error_1;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    return __generator(this, function (_m) {
+        switch (_m.label) {
             case 0:
-                _b.trys.push([0, 3, , 4]);
+                _m.trys.push([0, 3, , 4]);
                 return [4 /*yield*/, payload_1.default.findGlobal({
                         slug: "shared-config",
                     })];
             case 1:
-                globalConfig = _b.sent();
+                globalConfig = _m.sent();
                 slug = req.params.slug;
                 return [4 /*yield*/, payload_1.default.find({
                         collection: "subscriptions",
@@ -81,26 +81,34 @@ app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void
                                 equals: slug,
                             },
                         },
+                        depth: 1, // Получаем данные связанной группы
                     })];
             case 2:
-                subscription = _b.sent();
+                subscription = _m.sent();
                 if (!((_a = subscription === null || subscription === void 0 ? void 0 : subscription.docs) === null || _a === void 0 ? void 0 : _a[0])) {
                     return [2 /*return*/, res.status(404).send("Подписка не найдена")];
                 }
                 sub = subscription.docs[0];
+                config = {
+                    vpn_name: ((_c = (_b = sub.group) === null || _b === void 0 ? void 0 : _b.configOverrides) === null || _c === void 0 ? void 0 : _c.vpn_name) || globalConfig.vpn_name,
+                    config_update_hours: ((_e = (_d = sub.group) === null || _d === void 0 ? void 0 : _d.configOverrides) === null || _e === void 0 ? void 0 : _e.config_update_hours) || globalConfig.config_update_hours,
+                    support_chat_link: ((_g = (_f = sub.group) === null || _f === void 0 ? void 0 : _f.configOverrides) === null || _g === void 0 ? void 0 : _g.support_chat_link) || globalConfig.support_chat_link,
+                    site_link: ((_j = (_h = sub.group) === null || _h === void 0 ? void 0 : _h.configOverrides) === null || _j === void 0 ? void 0 : _j.site_link) || globalConfig.site_link,
+                    announce: ((_l = (_k = sub.group) === null || _k === void 0 ? void 0 : _k.configOverrides) === null || _l === void 0 ? void 0 : _l.announce) || globalConfig.announce,
+                };
                 lines = __spreadArray([
-                    "#profile-title: ".concat(globalConfig.vpn_name),
-                    "#profile-update-interval: ".concat(globalConfig.config_update_hours),
+                    "#profile-title: ".concat(config.vpn_name),
+                    "#profile-update-interval: ".concat(config.config_update_hours),
                     "#subscription-userinfo: expire=".concat((0, dateUtils_1.dateToUnixTimestamp)(sub.expire)),
-                    "#support-url: ".concat(globalConfig.support_chat_link),
-                    "#profile-web-page-url: ".concat(globalConfig.site_link),
-                    "#announce: ".concat(globalConfig.announce)
+                    "#support-url: ".concat(config.support_chat_link),
+                    "#profile-web-page-url: ".concat(config.site_link),
+                    "#announce: ".concat(config.announce)
                 ], sub.links.map(function (obj) { return obj.url; }), true);
                 res.setHeader("Content-Type", "text/plain; charset=utf-8");
                 res.send(lines.join("\n"));
                 return [3 /*break*/, 4];
             case 3:
-                error_1 = _b.sent();
+                error_1 = _m.sent();
                 console.error(error_1);
                 res.status(500).send("Ошибка сервера");
                 return [3 /*break*/, 4];

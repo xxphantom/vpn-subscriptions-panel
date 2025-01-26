@@ -21,6 +21,16 @@ interface SubscriptionDocument {
   slug: string;
   expire: string;
   links: SubscriptionLink[];
+  group: {
+    id: string;
+    configOverrides?: {
+      vpn_name?: string;
+      config_update_hours?: number;
+      support_chat_link?: string;
+      site_link?: string;
+      announce?: string;
+    };
+  } | null;
 }
 
 const app = express();
@@ -36,7 +46,7 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
       slug: "shared-config",
     });
 
-    // 2) Ищем подписку по slug (или id)
+    // 2) Ищем подписку по slug c данными о группе
     const { slug } = req.params;
     const subscription = await payload.find({
       collection: "subscriptions",
@@ -45,6 +55,7 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
           equals: slug,
         },
       },
+      depth: 1, // Получаем данные связанной группы
     });
 
     if (!subscription?.docs?.[0]) {
@@ -53,14 +64,23 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
 
     const sub = subscription.docs[0] as unknown as SubscriptionDocument;
 
-    // 3) Собираем Plain Text
+    // Определяем конфигурацию с учетом группы
+    const config = {
+      vpn_name: sub.group?.configOverrides?.vpn_name || globalConfig.vpn_name,
+      config_update_hours: sub.group?.configOverrides?.config_update_hours || globalConfig.config_update_hours,
+      support_chat_link: sub.group?.configOverrides?.support_chat_link || globalConfig.support_chat_link,
+      site_link: sub.group?.configOverrides?.site_link || globalConfig.site_link,
+      announce: sub.group?.configOverrides?.announce || globalConfig.announce,
+    };
+
+    // 3) Собираем Plain Text с учетом конфигурации группы
     const lines = [
-      `#profile-title: ${globalConfig.vpn_name}`,
-      `#profile-update-interval: ${globalConfig.config_update_hours}`,
+      `#profile-title: ${config.vpn_name}`,
+      `#profile-update-interval: ${config.config_update_hours}`,
       `#subscription-userinfo: expire=${dateToUnixTimestamp(sub.expire)}`,
-      `#support-url: ${globalConfig.support_chat_link}`,
-      `#profile-web-page-url: ${globalConfig.site_link}`,
-      `#announce: ${globalConfig.announce}`,
+      `#support-url: ${config.support_chat_link}`,
+      `#profile-web-page-url: ${config.site_link}`,
+      `#announce: ${config.announce}`,
       // Добавляем ссылки
       ...sub.links.map((obj) => obj.url),
     ];

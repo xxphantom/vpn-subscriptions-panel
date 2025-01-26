@@ -8,6 +8,7 @@ import { buildConfig } from "payload/config";
 import { UsersCollection } from "./admin/collections/users";
 import { SharedConfig } from "./admin/globals/sharedConfig";
 import { Subscriptions } from "./admin/collections/subscriptions";
+import { SubscriptionGroups } from "./admin/collections/subscription-groups";
 
 export default buildConfig({
   admin: {
@@ -15,7 +16,7 @@ export default buildConfig({
     bundler: webpackBundler(),
   },
   editor: slateEditor({}),
-  collections: [UsersCollection, Subscriptions],
+  collections: [UsersCollection, Subscriptions, SubscriptionGroups],
   globals: [SharedConfig],
   typescript: {
     outputFile: path.resolve(__dirname, "payload-types.ts"),

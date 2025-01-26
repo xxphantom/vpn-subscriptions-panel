@@ -22,6 +22,15 @@ exports.Subscriptions = {
             required: true,
         },
         {
+            name: "group",
+            label: "Группа",
+            type: "relationship",
+            relationTo: "subscription-groups",
+            admin: {
+                description: "Группа подписки. Если выбрана, настройки группы будут иметь приоритет над общими настройками",
+            },
+        },
+        {
             name: "slug",
             label: "Идентификатор",
             type: "text",

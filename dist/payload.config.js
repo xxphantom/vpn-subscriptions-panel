@@ -12,13 +12,14 @@ var config_1 = require("payload/config");
 var users_1 = require("./admin/collections/users");
 var sharedConfig_1 = require("./admin/globals/sharedConfig");
 var subscriptions_1 = require("./admin/collections/subscriptions");
+var subscription_groups_1 = require("./admin/collections/subscription-groups");
 exports.default = (0, config_1.buildConfig)({
     admin: {
         user: users_1.UsersCollection.slug,
         bundler: (0, bundler_webpack_1.webpackBundler)(),
     },
     editor: (0, richtext_slate_1.slateEditor)({}),
-    collections: [users_1.UsersCollection, subscriptions_1.Subscriptions],
+    collections: [users_1.UsersCollection, subscriptions_1.Subscriptions, subscription_groups_1.SubscriptionGroups],
     globals: [sharedConfig_1.SharedConfig],
     typescript: {
         outputFile: path_1.default.resolve(__dirname, "payload-types.ts"),
