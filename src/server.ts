@@ -1,4 +1,3 @@
-// backend/src/server.ts
 import express from "express";
 import payload from "payload";
 import { Request, Response } from "express";

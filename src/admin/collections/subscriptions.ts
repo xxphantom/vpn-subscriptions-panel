@@ -1,4 +1,3 @@
-// backend/src/admin/collections/subscriptions.ts
 import { sanitizeUrl } from "../../shared/sanitize-url";
 import { CollectionConfig } from "payload/types";
 import { v4 as uuidv4 } from "uuid";
