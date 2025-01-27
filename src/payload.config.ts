@@ -14,6 +14,7 @@ export default buildConfig({
   admin: {
     user: UsersCollection.slug,
     bundler: webpackBundler(),
+    dateFormat: "HH:mm dd.MM.yyyy",
   },
   editor: slateEditor({}),
   collections: [UsersCollection, Subscriptions, SubscriptionGroups],
