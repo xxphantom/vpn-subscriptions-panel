@@ -5,6 +5,8 @@ import https from "https";
 import fs from "fs";
 import path from "path";
 import { dateToUnixTimestamp } from "./shared/dateUtils";
+import { renderSubscriptionTemplate } from "./templates/subscription";
+import { Subscription, SubscriptionGroup } from "./payload-types";
 
 const DEFAULT_PORT = 3000;
 
@@ -12,25 +14,18 @@ require("dotenv").config();
 
 interface SubscriptionLink {
   url: string;
+  id?: string | null;
 }
 
-interface SubscriptionDocument {
-  name: string;
-  title: string;
-  slug: string;
+export type SubscriptionConfig = {
+  vpn_name: string;
+  config_update_hours: string;
+  support_chat_link: string;
+  site_link: string;
+  announce: string;
   expire: string;
-  links: SubscriptionLink[];
-  group: {
-    id: string;
-    configOverrides?: {
-      vpn_name?: string;
-      config_update_hours?: number;
-      support_chat_link?: string;
-      site_link?: string;
-      announce?: string;
-    };
-  } | null;
-}
+  links?: SubscriptionLink[];
+};
 
 const app = express();
 
@@ -61,27 +56,51 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
       return res.status(404).send("Подписка не найдена");
     }
 
-    const sub = subscription.docs[0] as unknown as SubscriptionDocument;
+    const sub = subscription.docs[0] as unknown as Subscription;
+    const group =
+      "group" in sub && typeof sub.group === "object"
+        ? sub.group
+        : ({} as SubscriptionGroup);
+    const configOverrides =
+      ("configoverrides" in group && group.configOverrides) ||
+      ({} as SubscriptionGroup["configOverrides"]);
 
     // Определяем конфигурацию с учетом группы
     const config = {
-      vpn_name: sub.group?.configOverrides?.vpn_name || globalConfig.vpn_name,
-      config_update_hours: sub.group?.configOverrides?.config_update_hours || globalConfig.config_update_hours,
-      support_chat_link: sub.group?.configOverrides?.support_chat_link || globalConfig.support_chat_link,
-      site_link: sub.group?.configOverrides?.site_link || globalConfig.site_link,
-      announce: sub.group?.configOverrides?.announce || globalConfig.announce,
+      links: sub.links,
+      expire: sub.expire,
+      vpn_name: String(configOverrides.vpn_name || globalConfig.vpn_name),
+      config_update_hours: String(
+        configOverrides.config_update_hours || globalConfig.config_update_hours,
+      ),
+      support_chat_link: String(
+        configOverrides.support_chat_link || globalConfig.support_chat_link,
+      ),
+      site_link: String(configOverrides.site_link || globalConfig.site_link),
+      announce: String(configOverrides.announce || globalConfig.announce),
     };
+
+    // Проверяем Accept заголовок для браузера
+    const acceptHeader = req.get("Accept");
+    if (acceptHeader && acceptHeader.includes("text/html")) {
+      // Для веб-браузера возвращаем HTML страницу
+      const html = renderSubscriptionTemplate({
+        ...config,
+        ...{ links: sub.links },
+      });
+      return res.send(html);
+    }
 
     // 3) Собираем Plain Text с учетом конфигурации группы
     const lines = [
       `#profile-title: ${config.vpn_name}`,
       `#profile-update-interval: ${config.config_update_hours}`,
-      `#subscription-userinfo: expire=${dateToUnixTimestamp(sub.expire)}`,
+      `#subscription-userinfo: expire=${dateToUnixTimestamp(config.expire)}`,
       `#support-url: ${config.support_chat_link}`,
       `#profile-web-page-url: ${config.site_link}`,
       `#announce: ${config.announce}`,
       // Добавляем ссылки
-      ...sub.links.map((obj) => obj.url),
+      ...config.links.map((obj) => obj.url),
     ];
 
     res.setHeader("Content-Type", "text/plain; charset=utf-8");

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -48,13 +59,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// backend/src/server.ts
 var express_1 = __importDefault(require("express"));
 var payload_1 = __importDefault(require("payload"));
 var https_1 = __importDefault(require("https"));
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var dateUtils_1 = require("./shared/dateUtils");
+var subscription_1 = require("./templates/subscription");
 var DEFAULT_PORT = 3000;
 require("dotenv").config();
 var app = (0, express_1.default)();
@@ -62,17 +73,17 @@ app.get("/", function (_, res) {
     res.redirect("/admin");
 });
 app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var globalConfig, slug, subscription, sub, config, lines, error_1;
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
-    return __generator(this, function (_m) {
-        switch (_m.label) {
+    var globalConfig, slug, subscription, sub, group, configOverrides, config, acceptHeader, html, lines, error_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _m.trys.push([0, 3, , 4]);
+                _b.trys.push([0, 3, , 4]);
                 return [4 /*yield*/, payload_1.default.findGlobal({
                         slug: "shared-config",
                     })];
             case 1:
-                globalConfig = _m.sent();
+                globalConfig = _b.sent();
                 slug = req.params.slug;
                 return [4 /*yield*/, payload_1.default.find({
                         collection: "subscriptions",
@@ -84,31 +95,43 @@ app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void
                         depth: 1, // Получаем данные связанной группы
                     })];
             case 2:
-                subscription = _m.sent();
+                subscription = _b.sent();
                 if (!((_a = subscription === null || subscription === void 0 ? void 0 : subscription.docs) === null || _a === void 0 ? void 0 : _a[0])) {
                     return [2 /*return*/, res.status(404).send("Подписка не найдена")];
                 }
                 sub = subscription.docs[0];
+                group = "group" in sub && typeof sub.group === "object"
+                    ? sub.group
+                    : {};
+                configOverrides = ("configoverrides" in group && group.configOverrides) ||
+                    {};
                 config = {
-                    vpn_name: ((_c = (_b = sub.group) === null || _b === void 0 ? void 0 : _b.configOverrides) === null || _c === void 0 ? void 0 : _c.vpn_name) || globalConfig.vpn_name,
-                    config_update_hours: ((_e = (_d = sub.group) === null || _d === void 0 ? void 0 : _d.configOverrides) === null || _e === void 0 ? void 0 : _e.config_update_hours) || globalConfig.config_update_hours,
-                    support_chat_link: ((_g = (_f = sub.group) === null || _f === void 0 ? void 0 : _f.configOverrides) === null || _g === void 0 ? void 0 : _g.support_chat_link) || globalConfig.support_chat_link,
-                    site_link: ((_j = (_h = sub.group) === null || _h === void 0 ? void 0 : _h.configOverrides) === null || _j === void 0 ? void 0 : _j.site_link) || globalConfig.site_link,
-                    announce: ((_l = (_k = sub.group) === null || _k === void 0 ? void 0 : _k.configOverrides) === null || _l === void 0 ? void 0 : _l.announce) || globalConfig.announce,
+                    links: sub.links,
+                    expire: sub.expire,
+                    vpn_name: String(configOverrides.vpn_name || globalConfig.vpn_name),
+                    config_update_hours: String(configOverrides.config_update_hours || globalConfig.config_update_hours),
+                    support_chat_link: String(configOverrides.support_chat_link || globalConfig.support_chat_link),
+                    site_link: String(configOverrides.site_link || globalConfig.site_link),
+                    announce: String(configOverrides.announce || globalConfig.announce),
                 };
+                acceptHeader = req.get("Accept");
+                if (acceptHeader && acceptHeader.includes("text/html")) {
+                    html = (0, subscription_1.renderSubscriptionTemplate)(__assign(__assign({}, config), { links: sub.links }));
+                    return [2 /*return*/, res.send(html)];
+                }
                 lines = __spreadArray([
                     "#profile-title: ".concat(config.vpn_name),
                     "#profile-update-interval: ".concat(config.config_update_hours),
-                    "#subscription-userinfo: expire=".concat((0, dateUtils_1.dateToUnixTimestamp)(sub.expire)),
+                    "#subscription-userinfo: expire=".concat((0, dateUtils_1.dateToUnixTimestamp)(config.expire)),
                     "#support-url: ".concat(config.support_chat_link),
                     "#profile-web-page-url: ".concat(config.site_link),
                     "#announce: ".concat(config.announce)
-                ], sub.links.map(function (obj) { return obj.url; }), true);
+                ], config.links.map(function (obj) { return obj.url; }), true);
                 res.setHeader("Content-Type", "text/plain; charset=utf-8");
                 res.send(lines.join("\n"));
                 return [3 /*break*/, 4];
             case 3:
-                error_1 = _m.sent();
+                error_1 = _b.sent();
                 console.error(error_1);
                 res.status(500).send("Ошибка сервера");
                 return [3 /*break*/, 4];

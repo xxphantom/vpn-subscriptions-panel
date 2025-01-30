@@ -37,7 +37,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Subscriptions = void 0;
-// backend/src/admin/collections/subscriptions.ts
 var sanitize_url_1 = require("../../shared/sanitize-url");
 var uuid_1 = require("uuid");
 exports.Subscriptions = {

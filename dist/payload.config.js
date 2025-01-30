@@ -17,6 +17,7 @@ exports.default = (0, config_1.buildConfig)({
     admin: {
         user: users_1.UsersCollection.slug,
         bundler: (0, bundler_webpack_1.webpackBundler)(),
+        dateFormat: "HH:mm dd.MM.yyyy",
     },
     editor: (0, richtext_slate_1.slateEditor)({}),
     collections: [users_1.UsersCollection, subscriptions_1.Subscriptions, subscription_groups_1.SubscriptionGroups],
