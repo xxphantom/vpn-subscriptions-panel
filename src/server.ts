@@ -86,7 +86,7 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
       // Для веб-браузера возвращаем HTML страницу
       const html = renderSubscriptionTemplate({
         ...config,
-        ...{ links: sub.links },
+        ...{ subscriptionUrl: sub.subscriptionUrl },
       });
       return res.send(html);
     }

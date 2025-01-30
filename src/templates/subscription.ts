@@ -2,7 +2,7 @@ import { SubscriptionConfig } from "@/server";
 import { Subscription } from "../payload-types";
 
 export function renderSubscriptionTemplate(
-  subscription: SubscriptionConfig,
+  subscription: SubscriptionConfig & { subscriptionUrl?: string },
 ): string {
   const currentTimestamp = Date.now() / 1000;
   const expireTimestamp = subscription.expire
@@ -94,17 +94,73 @@ export function renderSubscriptionTemplate(
             gap: 0.75rem;
         }
 
+        .app-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .app-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            color: #333;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .app-link:hover {
+            background: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .collapsible {
+            margin-top: 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 1rem;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collapsible-header:hover {
+            background: #f0f0f0;
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 1rem;
+        }
+
+        .collapsible.open .collapsible-content {
+            display: block;
+        }
+
+        .collapsible-header::after {
+            content: "▼";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-header::after {
+            transform: rotate(180deg);
+        }
+
         .link-item {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-        }
-
-        .link-content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            width: 100%;
         }
 
         .subscription-name {
@@ -279,27 +335,67 @@ export function renderSubscriptionTemplate(
         }
 
         <div class="links-container">
-            <h2>Ссылки:</h2>
-            <ul>
-                ${subscription.links
-                  .map(
-                    (link) => `
-                    <li class="link-item">
-                        <div class="subscription-name">${link.url.split("#")[1] || ""}</div>
-                        <div class="link-content">
-                            <div class="link-row">
-                                <input type="text" class="link-input" value="${link.url}" readonly />
-                                <div class="buttons-group">
-                                    <button class="btn copy-btn" data-link="${link.url}">Копировать</button>
-                                    <button class="btn qr-btn" data-link="${link.url}">QR</button>
-                                </div>
-                            </div>
+            <h2>Подписка:</h2>
+            <div class="link-item">
+                <div class="link-content">
+                    <div class="link-row">
+                        <input type="text" class="link-input" value="${subscription.subscriptionUrl || ""}" readonly />
+                        <div class="buttons-group">
+                            <button class="btn copy-btn" data-link="${subscription.subscriptionUrl || ""}">Копировать</button>
+                            <button class="btn qr-btn" data-link="${subscription.subscriptionUrl || ""}">QR</button>
                         </div>
-                    </li>
-                `,
-                  )
-                  .join("")}
-            </ul>
+                    </div>
+                </div>
+            </div>
+
+        <div class="links-container">
+            <h2>Клиенты:</h2>
+            <div class="app-links">
+                <a href="https://apps.apple.com/us/app/happ-proxy-utility/id6504287215" target="_blank" class="app-link">
+                    App Store (iOS)
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.happproxy" target="_blank" class="app-link">
+                   Google Play (Android) 
+                </a>
+                <a href="https://github.com/hiddify/hiddify-app/releases/latest/download/Hiddify-Windows-Setup-x64.Msix" target="_blank" class="app-link">
+                   Hiddify (PC)
+                </a>
+            </div>
+        </div>
+
+            ${
+              subscription.links?.length > 0
+                ? `
+            <div class="collapsible">
+                <div class="collapsible-header">
+                    Подписка включает:
+                </div>
+                <div class="collapsible-content">
+                    <ul>
+                        ${subscription.links
+                          .map(
+                            (link) => `
+                            <li class="link-item">
+                                <div class="subscription-name">${link.url.split("#")[1] || ""}</div>
+                                <div class="link-content">
+                                    <div class="link-row">
+                                        <input type="text" class="link-input" value="${link.url}" readonly />
+                                        <div class="buttons-group">
+                                            <button class="btn copy-btn" data-link="${link.url}">Копировать</button>
+                                            <button class="btn qr-btn" data-link="${link.url}">QR</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        `,
+                          )
+                          .join("")}
+                    </ul>
+                </div>
+            </div>
+            `
+                : ""
+            }
         </div>
     </div>
 
@@ -317,6 +413,7 @@ export function renderSubscriptionTemplate(
             const qrModal = document.getElementById('qrModal');
             const qrClose = qrModal.querySelector('.qr-close');
             const qrCode = document.getElementById('qrCode');
+            const collapsibles = document.querySelectorAll('.collapsible');
 
             // Копирование ссылки
             copyBtns.forEach(btn => {
@@ -352,7 +449,7 @@ export function renderSubscriptionTemplate(
                         // Создаем новый QR код с расширенными настройками
                         const qr = new QRious({
                             element: document.getElementById('qrCanvas'),
-                            value: link.split('#')[0] + '#' + encodeURIComponent(link.split('#')[1]),
+                            value: link.split('').includes('#') ? (link.split('#')[0] + '#' + encodeURIComponent(link.split('#')[1])) : link,
                             size: 400,
                             background: 'white',
                             backgroundAlpha: 0,
@@ -379,6 +476,14 @@ export function renderSubscriptionTemplate(
                 if (e.target === qrModal) {
                     qrModal.style.display = 'none';
                 }
+            });
+
+            // Обработка сворачиваемых блоков
+            collapsibles.forEach(collapsible => {
+                const header = collapsible.querySelector('.collapsible-header');
+                header.addEventListener('click', () => {
+                    collapsible.classList.toggle('open');
+                });
             });
         });
     </script>

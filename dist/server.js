@@ -116,7 +116,7 @@ app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void
                 };
                 acceptHeader = req.get("Accept");
                 if (acceptHeader && acceptHeader.includes("text/html")) {
-                    html = (0, subscription_1.renderSubscriptionTemplate)(__assign(__assign({}, config), { links: sub.links }));
+                    html = (0, subscription_1.renderSubscriptionTemplate)(__assign(__assign({}, config), { subscriptionUrl: sub.subscriptionUrl }));
                     return [2 /*return*/, res.send(html)];
                 }
                 lines = __spreadArray([
