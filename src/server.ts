@@ -62,7 +62,7 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
         ? sub.group
         : ({} as SubscriptionGroup);
     const configOverrides =
-      ("configoverrides" in group && group.configOverrides) ||
+      ("configOverrides" in group && group.configOverrides) ||
       ({} as SubscriptionGroup["configOverrides"]);
 
     // Определяем конфигурацию с учетом группы

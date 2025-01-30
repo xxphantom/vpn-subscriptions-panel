@@ -103,7 +103,7 @@ app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void
                 group = "group" in sub && typeof sub.group === "object"
                     ? sub.group
                     : {};
-                configOverrides = ("configoverrides" in group && group.configOverrides) ||
+                configOverrides = ("configOverrides" in group && group.configOverrides) ||
                     {};
                 config = {
                     links: sub.links,
