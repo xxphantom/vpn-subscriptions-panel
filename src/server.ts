@@ -7,6 +7,7 @@ import path from "path";
 import { dateToUnixTimestamp } from "./shared/dateUtils";
 import { renderSubscriptionTemplate } from "./templates/subscription";
 import { Subscription, SubscriptionGroup } from "./payload-types";
+import { encodeBase64 } from "./shared/encode-base64";
 
 const DEFAULT_PORT = 3000;
 
@@ -93,12 +94,12 @@ app.get("/subscription/:name/:slug", async (req: Request, res: Response) => {
 
     // 3) Собираем Plain Text с учетом конфигурации группы
     const lines = [
-      `#profile-title: ${config.vpn_name}`,
+      `#profile-title: ${encodeBase64(config.vpn_name)}`,
       `#profile-update-interval: ${config.config_update_hours}`,
       `#subscription-userinfo: expire=${dateToUnixTimestamp(config.expire)}`,
       `#support-url: ${config.support_chat_link}`,
       `#profile-web-page-url: ${config.site_link}`,
-      `#announce: ${config.announce}`,
+      `#announce: ${encodeBase64(config.announce)}`,
       // Добавляем ссылки
       ...config.links.map((obj) => obj.url),
     ];
