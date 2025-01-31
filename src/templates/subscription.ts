@@ -221,7 +221,7 @@ export function renderSubscriptionTemplate(
 
         @media (min-width: 640px) {
             .container {
-                width: min(100% - 32px, 600px);
+                width: min(100% - 32px, 620px);
                 margin-block: 32px;
             }
 
@@ -357,12 +357,11 @@ export function renderSubscriptionTemplate(
                 <a href="https://play.google.com/store/apps/details?id=com.happproxy" target="_blank" class="app-link">
                    Google Play (Android) 
                 </a>
-                <a href="https://github.com/hiddify/hiddify-app/releases/latest/download/Hiddify-Windows-Setup-x64.Msix" target="_blank" class="app-link">
-                   Hiddify (PC)
+                <a href="https://apps.microsoft.com/detail/9PDFNL3QV2S5?hl=neutral&gl=RU" target="_blank" class="app-link">
+                   Hiddify (Microsoft Store)
                 </a>
             </div>
         </div>
-
             ${
               subscription.links?.length > 0
                 ? `
