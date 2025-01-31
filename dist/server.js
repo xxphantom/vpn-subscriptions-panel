@@ -66,6 +66,7 @@ var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var dateUtils_1 = require("./shared/dateUtils");
 var subscription_1 = require("./templates/subscription");
+var encode_base64_1 = require("./shared/encode-base64");
 var DEFAULT_PORT = 3000;
 require("dotenv").config();
 var app = (0, express_1.default)();
@@ -120,12 +121,12 @@ app.get("/subscription/:name/:slug", function (req, res) { return __awaiter(void
                     return [2 /*return*/, res.send(html)];
                 }
                 lines = __spreadArray([
-                    "#profile-title: ".concat(config.vpn_name),
+                    "#profile-title: ".concat((0, encode_base64_1.encodeBase64)(config.vpn_name)),
                     "#profile-update-interval: ".concat(config.config_update_hours),
                     "#subscription-userinfo: expire=".concat((0, dateUtils_1.dateToUnixTimestamp)(config.expire)),
                     "#support-url: ".concat(config.support_chat_link),
                     "#profile-web-page-url: ".concat(config.site_link),
-                    "#announce: ".concat(config.announce)
+                    "#announce: ".concat((0, encode_base64_1.encodeBase64)(config.announce))
                 ], config.links.map(function (obj) { return obj.url; }), true);
                 res.setHeader("Content-Type", "text/plain; charset=utf-8");
                 res.send(lines.join("\n"));
